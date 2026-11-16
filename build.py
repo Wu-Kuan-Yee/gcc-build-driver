@@ -1706,7 +1706,12 @@ class GccBuilder(object):
         if self.host_shared():
             args.append("--enable-host-shared")
         if self.paths["darwin"]:
-            args.append("--enable-host-pie")
+            if a.library_linkage == "static":
+                # Static-only target runtimes do not build the PIC libgnat
+                # archive; keep host tools non-PIE so gnattools uses libgnat.a.
+                args.append("--disable-host-pie")
+            else:
+                args.append("--enable-host-pie")
         if a.libgdiagnostics:
             if self.host_shared():
                 args.append("--enable-libgdiagnostics")
