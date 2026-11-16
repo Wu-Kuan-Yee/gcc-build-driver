@@ -1,0 +1,18 @@
+diff --git a/libgrust/libformat_parser/Makefile.in b/libgrust/libformat_parser/Makefile.in
+index 294b554fb03..16d7a7081bb 100644
+--- a/libgrust/libformat_parser/Makefile.in
++++ b/libgrust/libformat_parser/Makefile.in
+@@ -431,10 +431,11 @@ uninstall-am:
+ 
+ all-local: $(LIBFORMAT_PARSER)
+ 
+-# TODO: Improve `cargo` invocation with host specific flags, possibly creating a $(CARGO) variable?
++CARGO ?= cargo
++
+ $(LIBFORMAT_PARSER): $(srcdir)/Cargo.toml $(srcdir)/src/*.rs
+ 	cd $(srcdir) && \
+-	cargo build --offline --target-dir $(RUST_BUILD_DIR)
++	$(CARGO) build --offline --target-dir $(RUST_BUILD_DIR)
+ 
+ # Tell versions [3.59,3.63) of GNU make to not export all variables.
+ # Otherwise a system limit (for SysV at least) may be exceeded.
