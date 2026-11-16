@@ -2756,6 +2756,11 @@ class GccBuilder(object):
         if self.args.make_target and self.args.make_target != "all":
             cmd.append(self.args.make_target)
         cmd += self.no_werror_make_override()
+        if (self.paths["darwin"]
+                and self.args.library_linkage == "static"):
+            # The Ada Makefile is generated late; override its PIC runtime
+            # choice on the make command line for the static-only build.
+            cmd.append("LIBGNAT=../rts/libgnat.a")
         if self.stage0 and self.stage0.found.get("rust"):
             cargo = self.stage0.found["rust"]
             cmd.append("CARGO=%s" % cargo)
