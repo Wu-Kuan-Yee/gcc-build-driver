@@ -2037,6 +2037,10 @@ class GccBuilder(object):
             return
         text = path.read_text()
         changed = False
+        if "HEAP_TRAMPOLINE_SRC :=" in text:
+            text = text.replace("HEAP_TRAMPOLINE_SRC :=",
+                                "HEAP_TRAMPOLINE_SRC =")
+            changed = True
         if "HEAP_TRAMPOLINE_SRC" not in text:
             text += ("\nHEAP_TRAMPOLINE_SRC = "
                      "$(filter %/heap-trampoline.c,$(LIB2ADDEH))\n")
