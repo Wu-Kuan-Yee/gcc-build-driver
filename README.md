@@ -103,7 +103,7 @@ Install into a custom prefix:
 | `--bootstrap {auto,yes,no}` | Bootstrap policy. |
 | `--static-host` | Static host executables where supported. |
 | `--static-runtime {auto,system,source}` | Source of static libc/crt. |
-| `--library-linkage {both,static}` | Target runtime libraries; `both` is the default. `static` installs only target static archives. On macOS it also disables shared-only components (JIT, libgdiagnostics, plugins, sanitizers) and uses static libgcc for Ada. |
+| `--library-linkage {both,static}` | Target runtime libraries; `both` is the default. `static` installs only target static archives. On macOS it also disables shared-only components (JIT, libgdiagnostics, plugins, sanitizers) and uses static libgcc for Ada. A full all-language macOS static-only build and package has been produced successfully. |
 | `--gdc-seed {auto,modern,legacy,system}` | D front-end bootstrap seed. |
 | `--no-gas-base64` | Avoid `.base64` for distribution to older binutils. |
 | `--package [FILE]` | Create a relocatable archive. |
