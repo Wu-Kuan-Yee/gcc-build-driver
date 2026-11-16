@@ -3888,8 +3888,7 @@ def main(argv=None):
         stage0 = None
         need_config = ((not (paths["build"] / "config.status").exists())
                        or args.reconfigure)
-        if (args.bootstrap_tools != "none" and need_config
-                and not args.dry_run):
+        if args.bootstrap_tools != "none" and not args.dry_run:
             stage0 = Stage0Manager(
                 Path(args.stage0_dir).resolve() if args.stage0_dir
                 else paths["deps"] / "stage0",
