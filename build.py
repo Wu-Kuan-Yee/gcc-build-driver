@@ -3719,6 +3719,9 @@ def main(argv=None):
         args.jit = False
         args.libgdiagnostics = False
         args.plugins = "no"
+        # Darwin's libsanitizer is shared-only upstream; without that it
+        # cannot configure a libtool library at all.
+        args.sanitizers = "no"
     log = Logger(args.log_file, color=args.color, quiet=args.quiet, verbose=args.verbose)
     started = time.time()
     try:
