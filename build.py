@@ -1939,6 +1939,7 @@ class GccBuilder(object):
         if (self.paths["darwin"] and self.args.library_linkage == "static"
                 and aarch64):
             wanted.append("0008-darwin-static-libgcc-rules.patch")
+            wanted.append("0011-ada-static-libgcc-darwin.patch")
         if lang("rust"):
             wanted.append("0009-libgrust-cargo-variable.patch")
             wanted.append("0010-gcc-rust-cargo-variable.patch")
