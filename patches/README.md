@@ -14,6 +14,7 @@ configuration. They are intentionally small and platform/feature scoped.
 | `0007-gnattools-libiconv.patch` | static host, Ada, Linux, static libiconv | Add `-liconv` to the gnattools link libraries. |
 | `0008-darwin-static-libgcc-rules.patch` | Darwin, static-only libraries, aarch64 | Add the shared emutls/heap-trampoline object rules required by Darwin's libgcc extra parts. |
 | `0009-libgrust-cargo-variable.patch` | Rust enabled | Use the configured `CARGO` path instead of relying on the caller's PATH. |
+| `0010-gcc-rust-cargo-variable.patch` | Rust enabled | Use the configured `CARGO` path for the Rust frontend's ffi-polonius build. |
 
 The driver also patches generated Makefiles after `configure`. Those edits
 contain absolute build paths and dependency locations, so they are not stored
