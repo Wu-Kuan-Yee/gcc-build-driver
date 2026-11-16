@@ -1,0 +1,37 @@
+# Normalize text files to LF in the repository, independent of the host OS.
+* text=auto eol=lf
+
+*.py      text eol=lf
+*.md      text eol=lf
+*.txt     text eol=lf
+*.sh      text eol=lf
+*.bash    text eol=lf
+*.zsh     text eol=lf
+*.bat     text eol=crlf
+*.cmd     text eol=crlf
+*.ps1     text eol=crlf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+
+# Binary artifacts
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.gif     binary
+*.webp    binary
+*.ico     binary
+*.pdf     binary
+*.zip     binary
+*.tar     binary
+*.tar.gz  binary
+*.tar.bz2 binary
+*.tar.xz  binary
+*.tgz     binary
+*.7z      binary
+*.dmg     binary
+*.pkg     binary
+*.a       binary
+*.so      binary
+*.dylib   binary
+*.dll     binary
+*.exe     binary
