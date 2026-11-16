@@ -15,6 +15,7 @@ configuration. They are intentionally small and platform/feature scoped.
 | `0008-darwin-static-libgcc-rules.patch` | Darwin, static-only libraries, aarch64 | Add the shared emutls/heap-trampoline object rules required by Darwin's libgcc extra parts. |
 | `0009-libgrust-cargo-variable.patch` | Rust enabled | Use the configured `CARGO` path instead of relying on the caller's PATH. |
 | `0010-gcc-rust-cargo-variable.patch` | Rust enabled | Use the configured `CARGO` path for the Rust frontend's ffi-polonius build. |
+| `0011-ada-static-libgcc-darwin.patch` | Darwin, static-only libraries, aarch64 | Select static libgcc for Ada links when shared target libraries are disabled. |
 
 The driver also patches generated Makefiles after `configure`. Those edits
 contain absolute build paths and dependency locations, so they are not stored

@@ -103,7 +103,7 @@ Install into a custom prefix:
 | `--bootstrap {auto,yes,no}` | Bootstrap policy. |
 | `--static-host` | Static host executables where supported. |
 | `--static-runtime {auto,system,source}` | Source of static libc/crt. |
-| `--library-linkage {both,static}` | Target runtime libraries; `both` is the default. `static` is intended for ELF targets; Darwin's libgcc configuration still expects shared convenience archives, so use `both` on macOS. |
+| `--library-linkage {both,static}` | Target runtime libraries; `both` is the default. `static` installs only target static archives. On macOS it also disables shared-only components (JIT, libgdiagnostics, plugins, sanitizers) and uses static libgcc for Ada. |
 | `--gdc-seed {auto,modern,legacy,system}` | D front-end bootstrap seed. |
 | `--no-gas-base64` | Avoid `.base64` for distribution to older binutils. |
 | `--package [FILE]` | Create a relocatable archive. |
@@ -131,7 +131,9 @@ summary to `<build-dir>/build-summary.json`.
 - Paths may be absolute or relative; explicit relative paths are resolved
   against the current working directory.
 - macOS builds use the selected SDK and preserve the platform's native
-  dynamic system libraries.
+  dynamic system libraries. With `--library-linkage=static`, host tools are
+  still linked against the macOS system libraries, while target libraries are
+  installed as static archives only.
 - Linux and BSD builds statically link host executables by default. Pass
   `--no-static-host` to keep them dynamically linked.
 - Windows builds are supported through MSYS2/MinGW; use the matching target
