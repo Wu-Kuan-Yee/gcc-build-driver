@@ -2037,21 +2037,27 @@ class GccBuilder(object):
             return
         text = path.read_text()
         changed = False
-        if "HEAP_TRAMPOLINE_SRC :=" in text:
-            text = text.replace("HEAP_TRAMPOLINE_SRC :=",
-                                "HEAP_TRAMPOLINE_SRC =")
-            changed = True
-        if "HEAP_TRAMPOLINE_SRC" not in text:
-            text += ("\nHEAP_TRAMPOLINE_SRC = "
-                     "$(filter %/heap-trampoline.c,$(LIB2ADDEH))\n")
-            changed = True
+        # An earlier version used an immediate variable which expanded before
+        # LIB2ADDEH was populated; remove it if present.
+        for old in ("\nHEAP_TRAMPOLINE_SRC := "
+                    "$(filter %/heap-trampoline.c,$(LIB2ADDEH))\n",
+                    "\nHEAP_TRAMPOLINE_SRC = "
+                    "$(filter %/heap-trampoline.c,$(LIB2ADDEH))\n"):
+            if old in text:
+                text = text.replace(old, "\n")
+                changed = True
+        target = self.paths["target_triple"]
+        if target.startswith("aarch64"):
+            src = "$(srcdir)/config/aarch64/heap-trampoline.c"
+        else:
+            src = "$(srcdir)/config/i386/heap-trampoline.c"
         if "emutls_s.o: $(srcdir)/emutls.c" not in text:
             text += ("\nemutls_s.o: $(srcdir)/emutls.c\n"
                      "\t$(gcc_s_compile) -c $< $(vis_hide)\n")
             changed = True
-        if "heap-trampoline_s.o: $(HEAP_TRAMPOLINE_SRC)" not in text:
-            text += ("\nheap-trampoline_s.o: $(HEAP_TRAMPOLINE_SRC)\n"
-                     "\t$(gcc_s_compile) -c $< $(vis_hide)\n")
+        if "heap-trampoline_s.o: " + src not in text:
+            text += ("\nheap-trampoline_s.o: %s\n"
+                     "\t$(gcc_s_compile) -c $< $(vis_hide)\n" % src)
             changed = True
         if changed:
             path.write_text(text)
