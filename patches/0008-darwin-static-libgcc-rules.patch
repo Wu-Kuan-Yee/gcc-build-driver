@@ -1,5 +1,5 @@
 diff --git a/libgcc/config/t-darwin b/libgcc/config/t-darwin
-index 0f65b54a230..772b83f3cf8 100644
+index 0f65b54a230..d45b388b1b9 100644
 --- a/libgcc/config/t-darwin
 +++ b/libgcc/config/t-darwin
 @@ -66,3 +66,14 @@ libheapt_w.a: heap-trampoline_s.o
@@ -10,7 +10,7 @@ index 0f65b54a230..772b83f3cf8 100644
 +# Static-only libgcc still installs the weak emutls and heap-trampoline
 +# convenience archives.  Their shared objects are normally generated only
 +# for shared libgcc, so provide explicit rules that work for both modes.
-+HEAP_TRAMPOLINE_SRC := $(filter %/heap-trampoline.c,$(LIB2ADDEH))
++HEAP_TRAMPOLINE_SRC = $(filter %/heap-trampoline.c,$(LIB2ADDEH))
 +
 +emutls_s.o: $(srcdir)/emutls.c
 +	$(gcc_s_compile) -c $< $(vis_hide)

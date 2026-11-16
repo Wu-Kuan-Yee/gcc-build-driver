@@ -2038,7 +2038,7 @@ class GccBuilder(object):
         text = path.read_text()
         changed = False
         if "HEAP_TRAMPOLINE_SRC" not in text:
-            text += ("\nHEAP_TRAMPOLINE_SRC := "
+            text += ("\nHEAP_TRAMPOLINE_SRC = "
                      "$(filter %/heap-trampoline.c,$(LIB2ADDEH))\n")
             changed = True
         if "emutls_s.o: $(srcdir)/emutls.c" not in text:
