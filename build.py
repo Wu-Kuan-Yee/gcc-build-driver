@@ -1936,6 +1936,7 @@ class GccBuilder(object):
             wanted.append("0008-darwin-static-libgcc-rules.patch")
         if lang("rust"):
             wanted.append("0009-libgrust-cargo-variable.patch")
+            wanted.append("0010-gcc-rust-cargo-variable.patch")
         git = shutil.which("git")
         for name in wanted:
             patch = patch_dir / name
