@@ -1,0 +1,16 @@
+diff --git a/libgcobol/charmaps.h b/libgcobol/charmaps.h
+index d324a4361ef..ab89d586f2c 100644
+--- a/libgcobol/charmaps.h
++++ b/libgcobol/charmaps.h
+@@ -44,6 +44,11 @@
+ #include <unistd.h>
+ #include <limits.h>
+ #include <iconv.h>
++#if defined(STATIC_HOST_LIBICONV)
++#define iconv libiconv
++#define iconv_open libiconv_open
++#define iconv_close libiconv_close
++#endif
+ 
+ /*  There are four distinct codeset domains in the COBOL compiler.
+  *

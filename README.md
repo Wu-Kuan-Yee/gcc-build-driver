@@ -151,9 +151,15 @@ successful only when these checks pass.
 
 ```text
 build.py        build driver
+patches/        GCC source compatibility patches
 README.md       this file
 .gitignore      generated files and local toolchains
 .gitattributes  cross-platform line-ending rules
 ```
+
+The files under `patches/` are applied conditionally before GCC configure.
+They contain only GCC source changes (link rules and platform fixes); the
+driver still patches generated Makefiles after configure when absolute build
+paths are required.
 
 No submodules or generated binaries are tracked.

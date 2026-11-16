@@ -1,0 +1,15 @@
+diff --git a/gcc/go/gospec.cc b/gcc/go/gospec.cc
+index df1987b7663..0439927f3a7 100644
+--- a/gcc/go/gospec.cc
++++ b/gcc/go/gospec.cc
+@@ -265,7 +265,9 @@ lang_specific_driver (struct cl_decoded_option **in_decoded_options,
+   /* Copy the 0th argument, i.e., the name of the program itself.  */
+   new_decoded_options[j++] = decoded_options[i++];
+ 
+-#ifdef TARGET_CAN_SPLIT_STACK
++#if defined(TARGET_CAN_SPLIT_STACK) \
++    && defined(TARGET_LIBC_PROVIDES_SSP) \
++    && defined(TARGET_THREAD_SPLIT_STACK_OFFSET)
+   supports_split_stack = 1;
+ #endif
+ 

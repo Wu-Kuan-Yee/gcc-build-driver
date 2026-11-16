@@ -1,0 +1,12 @@
+diff --git a/gcc/ada/gcc-interface/Makefile.in b/gcc/ada/gcc-interface/Makefile.in
+index 9f7ef109c58..b467d59dfe6 100644
+--- a/gcc/ada/gcc-interface/Makefile.in
++++ b/gcc/ada/gcc-interface/Makefile.in
+@@ -260,6 +260,7 @@ ALL_ADAFLAGS = $(CFLAGS) $(ADA_CFLAGS) $(ADAFLAGS)
+ TOOLS_LIBS = ../version.o ../link.o ../targext.o ../../ggc-none.o \
+   ../../libcommon-target.a ../../libcommon.a ../../../libcpp/libcpp.a \
+   $(LIBS)
++TOOLS_LIBS += -liconv
+ 
+ # Specify the directories to be searched for header files.
+ # Both . and srcdir are used, in that order,

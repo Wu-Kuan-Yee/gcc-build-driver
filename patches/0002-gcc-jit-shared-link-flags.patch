@@ -1,0 +1,13 @@
+diff --git a/gcc/jit/Make-lang.in b/gcc/jit/Make-lang.in
+index 532e7c5b4b3..91e09eeb5e4 100644
+--- a/gcc/jit/Make-lang.in
++++ b/gcc/jit/Make-lang.in
+@@ -166,7 +166,7 @@ ifeq (,$(findstring darwin8,$(host)))
+ JIT_LDFLAGS += -Wl,-rpath,@loader_path
+ endif
+ else
+-JIT_LDFLAGS = $(LDFLAGS)
++JIT_LDFLAGS = $(filter-out -static -static-libstdc++ -static-libgcc,$(LDFLAGS))
+ endif
+ 
+ ifneq (,$(or $(findstring mingw,$(target)),$(filter %-cygwin,$(target))))

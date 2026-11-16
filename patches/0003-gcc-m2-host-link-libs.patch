@@ -1,0 +1,21 @@
+diff --git a/gcc/m2/Make-lang.in b/gcc/m2/Make-lang.in
+index e4f37a155b9..9b12604baf2 100644
+--- a/gcc/m2/Make-lang.in
++++ b/gcc/m2/Make-lang.in
+@@ -1414,7 +1414,7 @@ m2/boot-bin/mc$(exeext): $(BUILD-MC-BOOT-O) $(BUILD-MC-INTERFACE-O) \
+         m2/mc-boot/main.o mcflex.o m2/gm2-libs-boot/RTcodummy.o
+ 	+$(LINKER) $(ALL_LINKERFLAGS) $(LDFLAGS) -o $@ $(BUILD-MC-BOOT-O) \
+          $(BUILD-MC-INTERFACE-O) m2/mc-boot/main.o \
+-         mcflex.o m2/gm2-libs-boot/RTcodummy.o -lm
++         mcflex.o m2/gm2-libs-boot/RTcodummy.o -lm -lstdc++ -lsupc++ -lm
+ 
+ m2/mc-boot/$(SRC_PREFIX)%.o: m2/mc-boot/$(SRC_PREFIX)%.cc m2/gm2-libs/gm2-libs-host.h
+ 	-test -d $(@D)/$(DEPDIR) || $(mkinstalldirs) $(@D)/$(DEPDIR)
+@@ -1966,6 +1966,6 @@ m2/pge-boot/%.o: m2/pge-boot/%.cc m2/gm2-libs/gm2-libs-host.h m2/gm2config.h
+ 	$(POSTCOMPILE)
+ 
+ $(PGE): $(BUILD-PGE-O)
+-	+$(LINKER) $(ALL_LINKERFLAGS) $(LDFLAGS) -o $@ $(BUILD-PGE-O) -lm
++	+$(LINKER) $(ALL_LINKERFLAGS) $(LDFLAGS) -o $@ $(BUILD-PGE-O) -lm -lstdc++ -lsupc++ -lm
+ 
+ endif

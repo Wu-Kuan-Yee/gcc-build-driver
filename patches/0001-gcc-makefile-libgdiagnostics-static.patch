@@ -1,0 +1,33 @@
+diff --git a/gcc/Makefile.in b/gcc/Makefile.in
+index a4280256508..269fdf7c671 100644
+--- a/gcc/Makefile.in
++++ b/gcc/Makefile.in
+@@ -2491,10 +2491,10 @@ LIBGDIAGNOSTICS_EXTRA_OPTS = $(LIBGDIAGNOSTICS_VERSION_SCRIPT_OPTION) \
+ endif
+ endif
+ 
+-$(LIBGDIAGNOSTICS_FILENAME): $(libgdiagnostics_OBJS) $(CPPLIB) $(EXTRA_GCC_LIBS) $(LIBS) \
++$(LIBGDIAGNOSTICS_FILENAME): $(libgdiagnostics_OBJS) $(CPPLIB) $(EXTRA_GCC_LIBS) \
+ 	$(LIBDEPS) $(srcdir)/libgdiagnostics.map
+ 	@$(call LINK_PROGRESS,$(INDEX.libgdiagnostics),start)
+-	+$(LLINKER) $(ALL_LINKERFLAGS) $(LDFLAGS) -o $@ -shared \
++	+$(LLINKER) $(ALL_LINKERFLAGS) $(filter-out -static -static-libstdc++ -static-libgcc,$(LDFLAGS)) -o $@ -shared \
+ 	     $(libgdiagnostics_OBJS) \
+ 	     $(CPPLIB) $(EXTRA_GCC_LIBS) $(LIBS) \
+ 	     $(LIBGDIAGNOSTICS_EXTRA_OPTS)
+@@ -2515,9 +2515,13 @@ endif
+ 
+ # sarif-replay: a command-line tool that uses libgdiagnostics to
+ # replay SARIF files
+-sarif-replay: $(SARIF_REPLAY_OBJS) $(LIBGDIAGNOSTICS_FILENAME)
++libgdiagnostics.a: libgdiagnostics.o
++	$(AR) rc $@ $<
++	$(RANLIB) $@
++
++sarif-replay: $(SARIF_REPLAY_OBJS) libgdiagnostics.a
+ 	+$(LINKER) $(ALL_LINKERFLAGS) $(LDFLAGS) -o $@ \
+-	  $(SARIF_REPLAY_OBJS) $(LIBGDIAGNOSTICS_FILENAME) $(LIBS)
++	  $(SARIF_REPLAY_OBJS) libgdiagnostics.a $(LIBS)
+ 
+ # Dump a specs file to make -B./ read these specs over installed ones.
+ $(SPECS): xgcc$(exeext)

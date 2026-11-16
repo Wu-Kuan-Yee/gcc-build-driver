@@ -1,0 +1,14 @@
+diff --git a/libgcc/config/t-darwin b/libgcc/config/t-darwin
+index 0f65b54a230..f7cc0e08c4d 100644
+--- a/libgcc/config/t-darwin
++++ b/libgcc/config/t-darwin
+@@ -66,3 +66,9 @@ libheapt_w.a: heap-trampoline_s.o
+ 
+ # Symbols for all the sub-ports.
+ SHLIB_MAPFILES = libgcc-std.ver $(srcdir)/config/libgcc-libsystem.ver
++
++emutls_s.o: $(srcdir)/emutls.c
++	$(gcc_s_compile) -c $< $(vis_hide)
++
++heap-trampoline_s.o: $(srcdir)/config/aarch64/heap-trampoline.c
++	$(gcc_s_compile) -c $< $(vis_hide)
