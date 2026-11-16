@@ -921,7 +921,13 @@ class DependencyManager(object):
         env["CC"] = self.cc
         env["CXX"] = self.cxx
         env["CFLAGS"] = self.dep_cflags
-        env["CXXFLAGS"] = self.dep_cflags
+        # Never pass a C standard flag to a C++ compiler.  GMP's --enable-cxx
+        # configure otherwise probes /usr/bin/c++ -std=gnu11 and fails.
+        cxxflags = re.sub(r"-std=(?:gnu|c)(?:11|17|23)",
+                          "-std=gnu++14", self.dep_cflags)
+        if "-std=" not in cxxflags:
+            cxxflags += " -std=gnu++14"
+        env["CXXFLAGS"] = cxxflags
         env["LDFLAGS"] = ""
         env["LC_ALL"] = "C"
         env["LANG"] = "C"
