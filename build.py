@@ -2730,6 +2730,12 @@ class GccBuilder(object):
         if self.args.make_target and self.args.make_target != "all":
             cmd.append(self.args.make_target)
         cmd += self.no_werror_make_override()
+        if self.stage0 and self.stage0.found.get("rust"):
+            cargo = self.stage0.found["rust"]
+            cmd.append("CARGO=%s" % cargo)
+            rustc = str(Path(cargo).with_name("rustc"))
+            if Path(rustc).is_file():
+                cmd.append("RUSTC=%s" % rustc)
         started = time.time()
         if (self.args.static_runtime == "source"
                 and not self.bootstrap_enabled()):
