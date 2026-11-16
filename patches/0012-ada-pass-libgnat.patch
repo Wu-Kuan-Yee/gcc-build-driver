@@ -1,0 +1,31 @@
+diff --git a/gcc/ada/gcc-interface/Make-lang.in b/gcc/ada/gcc-interface/Make-lang.in
+index d81bd2aee39..073d4fbe58b 100644
+--- a/gcc/ada/gcc-interface/Make-lang.in
++++ b/gcc/ada/gcc-interface/Make-lang.in
+@@ -232,7 +232,7 @@ ifeq ($(build), $(host))
+         GNATMAKE="$(GNATMAKE_FOR_HOST)" \
+         GNATBIND="$(GNATBIND_FOR_HOST)" \
+         GNATLINK="$(GNATLINK_FOR_HOST)" \
+-        LIBGNAT=""
++        LIBGNAT="$(LIBGNAT)"
+   endif
+ else
+   # Build is different from host so we are either building a canadian cross
+@@ -252,7 +252,7 @@ else
+         GNATMAKE="$(GNATMAKE_FOR_HOST)"      \
+         GNATBIND="$(GNATBIND_FOR_HOST)"      \
+         GNATLINK="$(GNATLINK_FOR_HOST)"      \
+-        LIBGNAT=""
++        LIBGNAT="$(LIBGNAT)"
+   else
+     # This is a canadian cross. We should use a toolchain running on the
+     # build platform and targeting the host platform.
+@@ -268,7 +268,7 @@ else
+         GNATMAKE="$(GNATMAKE_FOR_HOST)"      \
+         GNATBIND="$(GNATBIND_FOR_HOST)"      \
+         GNATLINK="$(GNATLINK_FOR_HOST)"      \
+-        LIBGNAT=""
++        LIBGNAT="$(LIBGNAT)"
+   endif
+ endif
+ 
