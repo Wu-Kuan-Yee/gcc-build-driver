@@ -1896,84 +1896,6 @@ class GccBuilder(object):
             return False
         return not self.private_libc_has_tls_get_addr()
 
-    def apply_gcc_patches(self):
-        """Apply the GCC source patches shipped in patches/.
-
-        Patches are applied in filename order and only when the corresponding
-        feature/platform is enabled.  Existing user changes are not reverted;
-        a patch that is already applied is detected and skipped.
-        """
-        if self.args.no_source_patch:
-            return
-        patch_dir = Path(__file__).resolve().parent / "patches"
-        if not patch_dir.is_dir():
-            self.log.warn("GCC patch directory not found: %s" % patch_dir)
-            return
-        target = self.paths["target_triple"]
-        lang_spec = (self.args.languages or "all").strip()
-        def lang(name):
-            return lang_spec == "all" or name in [
-                x.strip() for x in re.split(r"[,\s]+", lang_spec)]
-        linux = not self.paths["darwin"] and not IS_WINDOWS
-        x86 = target.startswith(("x86_64", "i386", "i686"))
-        aarch64 = target.startswith("aarch64")
-        wanted = []
-        if self.args.libgdiagnostics:
-            wanted.append("0001-gcc-makefile-libgdiagnostics-static.patch")
-        if self.args.jit:
-            wanted.append("0002-gcc-jit-shared-link-flags.patch")
-        if self.args.static_host and lang("m2") and linux:
-            wanted.append("0003-gcc-m2-host-link-libs.patch")
-        if linux and x86:
-            wanted.append("0004-gcc-go-split-stack.patch")
-        if linux and aarch64:
-            wanted.append("0005-gcc-aarch64-linux-asm-hooks.patch")
-        if (linux and self.args.static_host and lang("cobol")
-                and self.deps_prefix and
-                (Path(self.deps_prefix) / "lib" / "libiconv.a").is_file()):
-            wanted.append("0006-libgcobol-static-iconv.patch")
-        if (linux and self.args.static_host and lang("ada")
-                and self.deps_prefix and
-                (Path(self.deps_prefix) / "lib" / "libiconv.a").is_file()):
-            wanted.append("0007-gnattools-libiconv.patch")
-        if (self.paths["darwin"] and self.args.library_linkage == "static"
-                and aarch64):
-            wanted.append("0008-darwin-static-libgcc-rules.patch")
-        git = shutil.which("git")
-        for name in wanted:
-            patch = patch_dir / name
-            if not patch.is_file():
-                self.log.warn("missing GCC patch: %s" % patch)
-                continue
-            if git:
-                check = subprocess.run(
-                    [git, "-C", str(self.source), "apply", "--check", str(patch)],
-                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                already = subprocess.run(
-                    [git, "-C", str(self.source), "apply", "--reverse", "--check",
-                     str(patch)], stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL)
-                if check.returncode == 0:
-                    proc = subprocess.run(
-                        [git, "-C", str(self.source), "apply", str(patch)],
-                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-                    if proc.returncode != 0:
-                        raise BuildError("failed to apply %s: %s" %
-                                         (name, proc.stdout.strip()))
-                    self.log.ok("applied GCC patch %s" % name)
-                elif already.returncode == 0:
-                    self.log.ok("GCC patch already applied: %s" % name)
-                else:
-                    self.log.warn("GCC patch does not apply cleanly: %s" % name)
-            else:
-                # POSIX patch fallback for hosts without git.
-                proc = subprocess.run(
-                    ["patch", "-p1", "-d", str(self.source), "-i", str(patch)],
-                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-                if proc.returncode != 0:
-                    self.log.warn("could not apply %s: %s" %
-                                  (name, proc.stdout.strip()))
-
     def patch_source_makefile(self):
         """GCC 17's libgdiagnostics rule lists $(LIBS) as a prerequisite.
         On Darwin $(LIBS) contains '-liconv', which make tries to build as a
@@ -2104,9 +2026,9 @@ class GccBuilder(object):
             self.log.ok("removed $(LIBS) from libgdiagnostics prerequisite")
 
     def patch_darwin_static_libgcc(self):
-        """Darwin's libgcc config keeps libemutls_w.a in EXTRA_PARTS even
-        when shared libgcc is disabled, but the shared emutls object rule is
-        only emitted for shared builds.  Add the missing rule explicitly."""
+        """Darwin keeps libemutls_w.a/libheapt_w.a in EXTRA_PARTS even when
+        shared libgcc is disabled, but their shared object rules are only
+        emitted for shared builds.  Supply explicit static-build rules."""
         if (not self.paths["darwin"]
                 or self.args.library_linkage != "static"):
             return
@@ -2114,18 +2036,23 @@ class GccBuilder(object):
         if not path.is_file():
             return
         text = path.read_text()
-        bad = ("\nemutls_s.o: $(srcdir)/emutls.c\n"
-               "\t$(gcc_compile) -c -DSHARED $< -o $@\n")
-        good = ("\nemutls_s.o: $(srcdir)/emutls.c\n"
-                "\t$(gcc_s_compile) -c $< $(vis_hide)\n")
-        if bad in text:
-            text = text.replace(bad, good)
-        elif "emutls_s.o: $(srcdir)/emutls.c" not in text:
-            text += good
-        else:
-            return
-        path.write_text(text)
-        self.log.ok("added static-build rule for Darwin libgcc emutls_s.o")
+        changed = False
+        if "HEAP_TRAMPOLINE_SRC" not in text:
+            text += ("\nHEAP_TRAMPOLINE_SRC := "
+                     "$(filter %/heap-trampoline.c,$(LIB2ADDEH))\n")
+            changed = True
+        if "emutls_s.o: $(srcdir)/emutls.c" not in text:
+            text += ("\nemutls_s.o: $(srcdir)/emutls.c\n"
+                     "\t$(gcc_s_compile) -c $< $(vis_hide)\n")
+            changed = True
+        if "heap-trampoline_s.o: $(HEAP_TRAMPOLINE_SRC)" not in text:
+            text += ("\nheap-trampoline_s.o: $(HEAP_TRAMPOLINE_SRC)\n"
+                     "\t$(gcc_s_compile) -c $< $(vis_hide)\n")
+            changed = True
+        if changed:
+            path.write_text(text)
+            self.log.ok("added static-build rules for Darwin libgcc "
+                        "emutls/heap-trampoline objects")
 
     def patch_source_shared_links(self):
         if (not self.args.static_host or self.paths["darwin"]
@@ -2354,7 +2281,6 @@ class GccBuilder(object):
 
     def configure(self):
         self.build_dir.mkdir(parents=True, exist_ok=True)
-        self.apply_gcc_patches()
         self.patch_source_makefile()
         self.patch_darwin_static_libgcc()
         self.patch_source_shared_links()
