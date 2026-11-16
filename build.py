@@ -2025,6 +2025,25 @@ class GccBuilder(object):
             path.write_text(text.replace(old, new, 1))
             self.log.ok("removed $(LIBS) from libgdiagnostics prerequisite")
 
+    def patch_darwin_static_libgcc(self):
+        """Darwin's libgcc config keeps libemutls_w.a in EXTRA_PARTS even
+        when shared libgcc is disabled, but the shared emutls object rule is
+        only emitted for shared builds.  Add the missing rule explicitly."""
+        if (not self.paths["darwin"]
+                or self.args.library_linkage != "static"):
+            return
+        path = self.source / "libgcc" / "config" / "t-darwin"
+        if not path.is_file():
+            return
+        text = path.read_text()
+        if "emutls_s.o: $(srcdir)/emutls.c" in text:
+            return
+        text += (
+            "\nemutls_s.o: $(srcdir)/emutls.c\n"
+            "\t$(gcc_compile) -c -DSHARED $< -o $@\n")
+        path.write_text(text)
+        self.log.ok("added static-build rule for Darwin libgcc emutls_s.o")
+
     def patch_source_shared_links(self):
         if (not self.args.static_host or self.paths["darwin"]
                 or not self.args.libgdiagnostics):
@@ -2253,6 +2272,7 @@ class GccBuilder(object):
     def configure(self):
         self.build_dir.mkdir(parents=True, exist_ok=True)
         self.patch_source_makefile()
+        self.patch_darwin_static_libgcc()
         self.patch_source_shared_links()
         self.patch_source_prereq()
         self.patch_x86_gotools()
