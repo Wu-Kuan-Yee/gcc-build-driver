@@ -103,7 +103,7 @@ Install into a custom prefix:
 | `--bootstrap {auto,yes,no}` | Bootstrap policy. |
 | `--static-host` | Static host executables where supported. |
 | `--static-runtime {auto,system,source}` | Source of static libc/crt. |
-| `--library-linkage {both,static}` | Target runtime libraries; `both` is the default. |
+| `--library-linkage {both,static}` | Target runtime libraries; `both` is the default. `static` is intended for ELF targets; Darwin's libgcc configuration still expects shared convenience archives, so use `both` on macOS. |
 | `--gdc-seed {auto,modern,legacy,system}` | D front-end bootstrap seed. |
 | `--no-gas-base64` | Avoid `.base64` for distribution to older binutils. |
 | `--package [FILE]` | Create a relocatable archive. |
