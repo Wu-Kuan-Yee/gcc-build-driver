@@ -1,0 +1,13 @@
+diff --git a/gcc/ada/gcc-interface/Makefile.in b/gcc/ada/gcc-interface/Makefile.in
+index 9f7ef109c58..8edafb1ab0a 100644
+--- a/gcc/ada/gcc-interface/Makefile.in
++++ b/gcc/ada/gcc-interface/Makefile.in
+@@ -216,7 +216,7 @@ LIBBACKTRACE = ../../../libbacktrace/.libs/libbacktrace.a
+ 
+ ifeq (@enable_host_pie@,yes)
+ LIBIBERTY = ../../../libiberty/pic/libiberty.a
+-LIBGNAT   = ../$(RTSDIR)/libgnat_pic.a
++LIBGNAT   = ../$(RTSDIR)/libgnat.a
+ else
+ LIBIBERTY = ../../../libiberty/libiberty.a
+ LIBGNAT   = ../$(RTSDIR)/libgnat.a

@@ -1941,6 +1941,7 @@ class GccBuilder(object):
             wanted.append("0008-darwin-static-libgcc-rules.patch")
             wanted.append("0011-ada-static-libgcc-darwin.patch")
             wanted.append("0012-ada-pass-libgnat.patch")
+            wanted.append("0013-ada-libgnat-static.patch")
         if lang("rust"):
             wanted.append("0009-libgrust-cargo-variable.patch")
             wanted.append("0010-gcc-rust-cargo-variable.patch")
