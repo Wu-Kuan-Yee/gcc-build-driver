@@ -1892,6 +1892,8 @@ class GccBuilder(object):
             return False
 
     def need_d21_shim(self):
+        if not self.args.static_host or self.paths["darwin"]:
+            return False
         return not self.private_libc_has_tls_get_addr()
 
     def patch_source_makefile(self):
