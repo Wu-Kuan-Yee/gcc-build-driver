@@ -2036,11 +2036,16 @@ class GccBuilder(object):
         if not path.is_file():
             return
         text = path.read_text()
-        if "emutls_s.o: $(srcdir)/emutls.c" in text:
+        bad = ("\nemutls_s.o: $(srcdir)/emutls.c\n"
+               "\t$(gcc_compile) -c -DSHARED $< -o $@\n")
+        good = ("\nemutls_s.o: $(srcdir)/emutls.c\n"
+                "\t$(gcc_s_compile) -c $< $(vis_hide)\n")
+        if bad in text:
+            text = text.replace(bad, good)
+        elif "emutls_s.o: $(srcdir)/emutls.c" not in text:
+            text += good
+        else:
             return
-        text += (
-            "\nemutls_s.o: $(srcdir)/emutls.c\n"
-            "\t$(gcc_compile) -c -DSHARED $< -o $@\n")
         path.write_text(text)
         self.log.ok("added static-build rule for Darwin libgcc emutls_s.o")
 
