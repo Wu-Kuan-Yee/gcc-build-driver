@@ -2144,6 +2144,23 @@ class GccBuilder(object):
             self.log.ok("added static-build rules for Darwin libgcc "
                         "emutls/heap-trampoline objects")
 
+    def patch_darwin_static_ada(self):
+        """The top-level configure forces host PIE on Darwin, which makes
+        gnattools choose libgnat_pic.a.  Static-only target libraries do not
+        build that archive; use the regular static Ada runtime instead."""
+        if (not self.paths["darwin"]
+                or self.args.library_linkage != "static"):
+            return
+        path = self.build_dir / "gcc" / "ada" / "gcc-interface" / "Makefile"
+        if not path.is_file():
+            return
+        text = path.read_text()
+        old = "LIBGNAT   = ../$(RTSDIR)/libgnat_pic.a"
+        new = "LIBGNAT   = ../$(RTSDIR)/libgnat.a"
+        if old in text:
+            path.write_text(text.replace(old, new, 1))
+            self.log.ok("using non-PIC libgnat.a for Darwin static-only tools")
+
     def patch_source_shared_links(self):
         if (not self.args.static_host or self.paths["darwin"]
                 or not self.args.libgdiagnostics):
@@ -2402,6 +2419,7 @@ class GccBuilder(object):
                 self.log.warn("existing configuration has no saved arguments; "
                               "pass --reconfigure for a clean configuration")
             self.patch_darwin_makefile()
+            self.patch_darwin_static_ada()
             self.patch_static_diagnostics()
             self.patch_static_iconv_makefile()
             self.make_static_host_wrappers()
@@ -2428,6 +2446,7 @@ class GccBuilder(object):
                         timeout=self.args.command_timeout or None)
         args_file.write_text("\n".join(new_args) + "\n")
         self.patch_darwin_makefile()
+        self.patch_darwin_static_ada()
         self.patch_static_diagnostics()
         self.patch_static_iconv_makefile()
 
